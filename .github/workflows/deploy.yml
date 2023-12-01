@@ -13,25 +13,22 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build, tag, and push image to Docker hub
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          IMAGE_NAME: go-cicd
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker buildx create --use
-          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker buildx build --platform linux/amd64,linux/arm64 -t $DOCKER_USERNAME/$IMAGE_NAME:latest -t $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
-          docker push $DOCKER_USERNAME/$IMAGE_NAME:latest
-          docker push $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_REGISTRY}}/go-cicd:latest
+            ${{ secrets.DOCKERHUB_REGISTRY}}/go-cicd:${{ github.sha }}
