@@ -11,15 +11,12 @@ ENTRYPOINT ["air"]
 FROM base as builder
 ADD . /app/
 WORKDIR /app/
-RUN CGO_ENABLE=0 GOOS=linux go build -a -installsuffix cgo -o pamm-backend .
+RUN CGO_ENABLE=0 GOOS=linux go build -a -installsuffix cgo -o golang-cicd .
 
-FROM public.ecr.aws/docker/library/alpine:latest
-RUN apt-get update \
-    && apt-get install --no-cache \
-    ca-certificates \
-    curl \
-    tzdata \
-    && update-ca-certificates
+FROM public.ecr.aws/docker/library/debian:buster-slim
+RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 WORKDIR /app/
-COPY --from=builder /app/pamm-backend .
-ENTRYPOINT ["/app/pamm-backend"]
+COPY --from=builder /app/golang-cicd .
+ENTRYPOINT ["/app/golang-cicd"]
