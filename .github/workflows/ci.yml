@@ -1,17 +1,17 @@
-name: Run Unit Tests
+name: CI
 
 on:
   push:
     branches: [ dev ]
   pull_request:
-    branches:
-      - '*'
+    types: [ opened, edited, reopened, synchronize, review_requested ]
+    branches: [ '*' ]
+  workflow_call:
 
 jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:14-alpine
@@ -34,7 +34,7 @@ jobs:
         id: go
 
       - name: Checkout code into Go module directory
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install golang-migrate
         run: |
