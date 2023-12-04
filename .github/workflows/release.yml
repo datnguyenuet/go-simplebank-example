@@ -33,5 +33,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME}}/go-cicd:latest
-            ${{ secrets.DOCKERHUB_USERNAME}}/go-cicd:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME}}/go-simplebank:latest
+            ${{ secrets.DOCKERHUB_USERNAME}}/go-simplebank:${{ github.sha }}
