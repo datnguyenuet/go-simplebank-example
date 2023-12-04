@@ -11,12 +11,12 @@ ENTRYPOINT ["air"]
 FROM base as builder
 ADD . /app/
 WORKDIR /app/
-RUN CGO_ENABLE=0 GOOS=linux go build -a -installsuffix cgo -o golang-cicd .
+RUN CGO_ENABLE=0 GOOS=linux go build -a -installsuffix cgo -o simplebank .
 
 FROM public.ecr.aws/docker/library/debian:buster-slim
 RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 WORKDIR /app/
-COPY --from=builder /app/golang-cicd .
-ENTRYPOINT ["/app/golang-cicd"]
+COPY --from=builder /app/simplebank .
+ENTRYPOINT ["/app/simplebank"]
