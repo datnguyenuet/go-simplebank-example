@@ -1,16 +1,19 @@
-name: Deploy to Prod
+name: Release
 
 on:
-  push:
-    branches: [ dev ]
   pull_request:
-    branches: [ dev ]
+    types: [ closed ]
+    branches: [ release ]
 
 jobs:
-  deploy:
+  RunCIJob:
+    uses: ./.github/workflows/ci.yml
+
+  BuildAndPushDockerImage:
     name: Build image
     runs-on: ubuntu-latest
-
+    if: github.event.pull_request.merged == true
+    needs: [ RunCIJob ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -30,5 +33,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_REGISTRY}}/go-cicd:latest
-            ${{ secrets.DOCKERHUB_REGISTRY}}/go-cicd:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME}}/go-cicd:latest
+            ${{ secrets.DOCKERHUB_USERNAME}}/go-cicd:${{ github.sha }}
